@@ -1,15 +1,13 @@
 import csv
-import prompter_311
+import prompter
 
-# check for all specified keys?
-# check that all keys in jsonObj are keys in CSV file
 # filter using list comprehension???
 # get JSON input from a file
 # output filtered items to a file
 
 # debugging function
 def printAll (data, title):
-    print title
+    print (title)
     count = 1
     for row in data: 
         line = str(count)
@@ -17,8 +15,8 @@ def printAll (data, title):
         for k, v in row.items():
             if k == 'id' or k == 'fiscal_year':
                 line = line + ' ' + v
-        print line
-    print
+        print (line)
+    print ()
 
 # oldList -> list filtering on
 # filterKey -> key value of interest for filtering
@@ -74,12 +72,17 @@ def fixFilter (jsonInput):
 
     return jsonObj
 
+def validateJSON (jsonObj, csvKeys):
+    for k in jsonObj.keys():
+        if k not in csvKeys:
+            return False
+    return True
+
 # main
 jsonInput = {"fiscal_year": [2018], "start_date": [""], "area": [""], "asset_type": ["Bridge"], "planning_status": ["In Progress"]}
 jsonObj = fixFilter (jsonInput)
 
-# should rename prompter_311
-fname = prompter_311.getFileName ()
+fname = prompter.getFileName ("Pick CSV file:")
 f_in = open (fname)
 
 # csvData initially stores all the data from the reader
@@ -88,12 +91,17 @@ with f_in:
 
     # copy data from reader into csvData
     reader = csv.DictReader(f_in)
-
     csvRow = {}
     for dictRow in reader:
         csvData.append (dictRow)
-   
-    for fKey, fValues in jsonObj.items():
-        csvData = filterItemsFromList (csvData, fKey, fValues)
 
-    printAll (csvData, "filtered results")
+    if validateJSON (jsonObj, csvData[0].keys()):
+   
+        # filter items in CSV file on the parameters specified in jsonObj
+        for fKey, fValues in jsonObj.items():
+            csvData = filterItemsFromList (csvData, fKey, fValues)
+
+        printAll (csvData, "filtered results")
+
+    else:
+        print ("Validation error in JSON search object")
