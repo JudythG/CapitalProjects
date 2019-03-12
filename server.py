@@ -1,20 +1,11 @@
 import csv
 import prompter
 import ast
+import json
 
-# filter using list comprehension???
-# get JSON input from a file
-# output filtered items to a file
-
-def writeFilteredResults (data, title):
-    with open ('filtered_results.csv', 'w', newline='') as csvfile:
-        if (len(data) > 0):
-            fieldnames = data[0].keys()
-
-            writer = csv.DictWriter (csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for row in data:
-                writer.writerow(row)
+def writeFilteredResults (data):
+    f_out = open ('filtered_results.txt', 'w')
+    f_out.write (json.dumps(data))
 
 # debugging function
 def printAll (data, title):
@@ -120,7 +111,7 @@ with f_csv_in:
         for fKey, fValues in jsonObj.items():
             csvData = filterItemsFromList (csvData, fKey, fValues)
 
-        writeFilteredResults (csvData, "filtered results")
+        writeFilteredResults (csvData)
 
     else:
         print ("Validation error in JSON search object")
