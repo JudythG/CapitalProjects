@@ -1,9 +1,20 @@
 import csv
 import prompter
+import ast
 
 # filter using list comprehension???
 # get JSON input from a file
 # output filtered items to a file
+
+def writeFilteredResults (data, title):
+    with open ('filtered_results.csv', 'w', newline='') as csvfile:
+        if (len(data) > 0):
+            fieldnames = data[0].keys()
+
+            writer = csv.DictWriter (csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
 
 # debugging function
 def printAll (data, title):
@@ -18,7 +29,7 @@ def printAll (data, title):
         print (line)
     print ()
 
-# oldList -> list filtering on
+# oldList -> the list that will be filtered on
 # filterKey -> key value of interest for filtering
 # filterValues -> list of string values or an empty list
 def filterItemsFromList (oldList, filterKey, filterValues):
@@ -79,18 +90,26 @@ def validateJSON (jsonObj, csvKeys):
     return True
 
 # main
-jsonInput = {"fiscal_year": [2018], "start_date": [""], "area": [""], "asset_type": ["Bridge"], "planning_status": ["In Progress"]}
-jsonObj = fixFilter (jsonInput)
 
-fname = prompter.getFileName ("Pick CSV file:")
-f_in = open (fname)
+# get JSON search object
+jsonInputString = ""
+fname = prompter.getFileName ("*.txt", "./inputFiles/jsonFiles", "Pick JSON Search Object file:")
+f_json_in = open (fname, "r")
+if f_json_in:
+    jsonInputString = f_json_in.read()
+    jsonInput = ast.literal_eval(jsonInputString) # crashes if invalid format
+    f_json_in.close()
+jsonObj = fixFilter (jsonInput) 
+
+fname = prompter.getFileName ("*.csv", "./inputFiles/csvFiles", "Pick CSV file:")
+f_csv_in = open (fname)
 
 # csvData initially stores all the data from the reader
 csvData = []
-with f_in:
+with f_csv_in:
 
     # copy data from reader into csvData
-    reader = csv.DictReader(f_in)
+    reader = csv.DictReader(f_csv_in)
     csvRow = {}
     for dictRow in reader:
         csvData.append (dictRow)
@@ -101,7 +120,7 @@ with f_in:
         for fKey, fValues in jsonObj.items():
             csvData = filterItemsFromList (csvData, fKey, fValues)
 
-        printAll (csvData, "filtered results")
+        writeFilteredResults (csvData, "filtered results")
 
     else:
         print ("Validation error in JSON search object")
