@@ -1,10 +1,9 @@
 import csv
-import prompter_311
+import prompter
 
 # main
 
-# should rename prompter_311
-fname = prompter_311.getFileName ()
+fname = prompter.getFileName ("*.csv", "./inputFiles/csvFiles", "Select CSV File")
 f_in = open (fname)
 
 with f_in:
