@@ -88,7 +88,7 @@ fname = prompter.getFileName ("*.txt", "./inputFiles/jsonFiles", "Pick JSON Sear
 f_json_in = open (fname, "r")
 if f_json_in:
     jsonInputString = f_json_in.read()
-    jsonInput = ast.literal_eval(jsonInputString) # crashes if invalid format
+    jsonInput = json.loads (jsonInputString)
     f_json_in.close()
 jsonObj = fixFilter (jsonInput) 
 
